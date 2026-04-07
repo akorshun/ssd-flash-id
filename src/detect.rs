@@ -71,6 +71,7 @@ const RTL_FW_PREFIXES: &[(&str, &str, RtlVariant)] = &[
 ];
 
 const SMI_VID: u16 = 0x2646;
+const SMI_VID_ALT: u16 = 0x126F;
 const RTL_VID: u16 = 0x10EC;
 const PHISON_VID: u16 = 0x1987;
 const MAXIO_VID: u16 = 0x1E4B;
@@ -96,7 +97,7 @@ fn detect_smi(fw: &str, model: &str, vid: u16, ssvid: u16) -> Option<ControllerT
     if model.contains("SM22") || model.contains("SM25") || model.contains("SM83") {
         return Some(ControllerType::Smi("SMI (by model)".to_string()));
     }
-    if vid == SMI_VID || ssvid == SMI_VID {
+    if vid == SMI_VID || ssvid == SMI_VID || vid == SMI_VID_ALT || ssvid == SMI_VID_ALT {
         return Some(ControllerType::Smi("SMI (by VID)".to_string()));
     }
     None
