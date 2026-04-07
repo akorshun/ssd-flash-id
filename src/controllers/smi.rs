@@ -6,7 +6,7 @@ const VALID_MANUFACTURER_IDS: &[u8] = &[
     0xC8, 0xEC, 0xEF,
 ];
 
-const BANK_START: usize = 0x30;
+const BANK_START: usize = 0x20;
 const BANK_END: usize = 0x1F0;
 const BANK_SIZE: usize = 8;
 const CTRL_NAME_OFFSET: usize = 0x1F0;
