@@ -9,14 +9,28 @@ const VALID_MANUFACTURER_IDS: &[u8] = &[
 const BANK_START: usize = 0x20;
 const BANK_END: usize = 0x1F0;
 const BANK_SIZE: usize = 8;
-const CTRL_NAME_OFFSET: usize = 0x1F0;
+const CTRL_NAME_OFFSETS: &[usize] = &[0x1F0, 0x240, 0x400];
 
 pub fn read_flash_id(dev: &NvmeDevice) -> Result<FlashIdResult, String> {
     let mut buf = [0u8; 2048];
     dev.admin_read(0xC2, 0, 0x200, 0, 0x40, 0x01, 0, 0, &mut buf)
         .map_err(|e| format!("SMI flash ID command failed: {}", e))?;
 
-    let ctrl_name = extract_controller_name(&buf[CTRL_NAME_OFFSET..]);
+    let ctrl_name = CTRL_NAME_OFFSETS
+        .iter()
+        .find_map(|&offset| {
+            if offset + 16 <= buf.len() {
+                let name = extract_controller_name(&buf[offset..]);
+                if !name.is_empty() && name != "SMI" {
+                    Some(name)
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        })
+        .unwrap_or_else(|| "SMI".to_string());
 
     let mut banks = Vec::new();
     let mut offset = BANK_START;
