@@ -57,6 +57,7 @@ pub fn read_flash_id(dev: &NvmeDevice) -> Result<FlashIdResult, String> {
 
 fn extract_controller_name(data: &[u8]) -> String {
     let end = data.iter().position(|&b| b == 0).unwrap_or(data.len());
+    let end = end.min(8); // hardcoded limit to strip garbage after controller name
     let s: String = data[..end]
         .iter()
         .map(|&b| if b.is_ascii_graphic() || b == b' ' { b as char } else { ' ' })
